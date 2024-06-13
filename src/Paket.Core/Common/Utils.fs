@@ -457,7 +457,14 @@ let runDotnet workingDir arguments =
         p.StartInfo.WorkingDirectory <- workingDir
         p.StartInfo.FileName <- "dotnet"
         p.StartInfo.Arguments <- arguments
+        p.StartInfo.UseShellExecute <- false
+        p.StartInfo.RedirectStandardOutput <- true
+        p.StartInfo.RedirectStandardError <- true
+        p.OutputDataReceived |> Event.add(fun ev -> printf "OUT: %s%s" ev.Data Environment.NewLine)
+        p.ErrorDataReceived  |> Event.add(fun ev -> printf "ERR: %s%s" ev.Data Environment.NewLine);
         p.Start() |> ignore
+        p.BeginOutputReadLine()
+        p.BeginErrorReadLine()
         p.WaitForExit()
         p.ExitCode
 
